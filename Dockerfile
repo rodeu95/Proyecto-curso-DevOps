@@ -3,11 +3,16 @@ FROM node:22-alpine AS build
 
 WORKDIR /app
 
-COPY src/ .
+COPY package.json .
+COPY build.js .
+COPY src ./src
+
+RUN npm run build
+
 
 # ---------- Stage 2: Production ----------
 FROM nginx:alpine
 
-COPY --from=build /app/ /usr/share/nginx/html/
+COPY --from=build /app/dist/ /usr/share/nginx/html/
 
 EXPOSE 80
