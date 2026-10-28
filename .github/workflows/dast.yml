@@ -37,15 +37,18 @@ jobs:
           docker compose logs
           exit 1
 
+      
+      
       - name: Run OWASP ZAP Baseline Scan
         run: |
           docker run --rm \
+            --user root \
             --network host \
             -v "$PWD:/zap/wrk/:rw" \
             ghcr.io/zaproxy/zaproxy:stable \
             zap-baseline.py \
             -t http://127.0.0.1:8080 \
-            -J zap-report.json \
+            -J /zap/wrk/zap-report.json \
             -I
 
       - name: Upload ZAP report
