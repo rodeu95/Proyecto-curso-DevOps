@@ -1,0 +1,61 @@
+name: DAST - OWASP ZAP
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  dast:
+    name: Dynamic Security Scan
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Start application
+        run: docker compose up -d --build
+
+      - name: Wait for application
+        run: |
+          for i in {1..30}; do
+            if curl -fsS http://127.0.0.1:8080/ > /dev/null; then
+              echo "Application is ready"
+              exit 0
+            fi
+            sleep 2
+          done
+
+          echo "Application did not become ready"
+          docker compose logs
+          exit 1
+
+      - name: Run OWASP ZAP Baseline Scan
+        run: |
+          docker run --rm \
+            --network host \
+            -v "$PWD:/zap/wrk/:rw" \
+            ghcr.io/zaproxy/zaproxy:stable \
+            zap-baseline.py \
+            -t http://127.0.0.1:8080 \
+            -J zap-report.json \
+            -I
+
+      - name: Upload ZAP report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: zap-security-report
+          path: zap-report.json
+          if-no-files-found: warn
+
+      - name: Stop application
+        if: always()
+        run: docker compose down
