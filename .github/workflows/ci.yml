@@ -11,10 +11,36 @@ on:
 permissions:
   contents: read
   packages: write
+  security-events: write
 
 jobs:
-  build:
+  security:
+    name: SAST - CodeQL
     runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      security-events: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: javascript
+
+      - name: Analyze code
+        uses: github/codeql-action/analyze@v3
+
+  build:
+    name: Build and publish Docker image
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      packages: write
 
     steps:
       - name: Checkout repository
