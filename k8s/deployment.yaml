@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: dashboard
-          image: devops-dashboard:terraform
-          imagePullPolicy: IfNotPresent
+          image: ghcr.io/rodeu95/proyecto-curso-devops:latest
+          imagePullPolicy: Always
           ports:
             - containerPort: 80
