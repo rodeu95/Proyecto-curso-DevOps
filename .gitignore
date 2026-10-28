@@ -3,3 +3,11 @@ node_modules/
 *.log
 .DS_Store
 dist/
+
+
+# Terraform
+**/.terraform/*
+*.tfstate
+*.tfstate.*
+crash.log
+crash.*.log

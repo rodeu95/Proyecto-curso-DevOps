@@ -1,0 +1,21 @@
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: devops-dashboard
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: devops-dashboard
+  template:
+    metadata:
+      labels:
+        app: devops-dashboard
+    spec:
+      containers:
+        - name: dashboard
+          image: devops-dashboard:terraform
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 80
